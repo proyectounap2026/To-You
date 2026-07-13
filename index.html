@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para ti</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        /* Fondo de código binario */
+        .matrix-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: #000;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease-out;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Sección de contraseña */
+        .password-section {
+            text-align: center;
+        }
+
+        .password-section p {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="password"],
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+            font-family: 'Arial', sans-serif;
+        }
+
+        input[type="password"]:focus,
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 10px rgba(118, 75, 162, 0.3);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .success-message {
+            color: #27ae60;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        /* Sección de mensaje */
+        .message-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .info-box p {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .info-box strong {
+            color: #764ba2;
+        }
+
+        /* Sección de confirmación */
+        .confirmation-section {
+            text-align: center;
+        }
+
+        .confirmation-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .confirmation-section p {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .button-group button {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.2em;
+        }
+
+        .button-group button.yes {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        .button-group button.no {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        /* Personaje animado */
+        .character {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .character-container {
+            position: relative;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .happy-face {
+            font-size: 150px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .star {
+            position: absolute;
+            font-size: 40px;
+            animation: twinkle 1.5s infinite;
+        }
+
+        .star:nth-child(2) {
+            top: 20px;
+            left: 50px;
+            animation-delay: 0.3s;
+        }
+
+        .star:nth-child(3) {
+            top: 20px;
+            right: 50px;
+            animation-delay: 0.6s;
+        }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 1.3em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .recap {
+            background: #f0f4ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .recap h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .recap p {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fondo de código binario animado -->
+    <div class="matrix-background">
+        <canvas id="matrixCanvas"></canvas>
+    </div>
+
+    <div class="container">
+        <h1>Para ti 💌</h1>
+
+        <!-- Sección 1: Contraseña -->
+        <div class="section active password-section">
+            <p>Escriba la contraseña</p>
+            <p style="font-size: 0.95em; color: #999;">Es tu nombre</p>
+            
+            <div class="form-group">
+                <input type="password" id="passwordInput" placeholder="Ingresa la contraseña">
+            </div>
+            
+            <button onclick="validatePassword()">Continuar</button>
+            <div id="passwordError" class="error-message"></div>
+        </div>
+
+        <!-- Sección 2: Mensaje -->
+        <div class="section message-section">
+            <h2>¡Hola Andres! 👋</h2>
+            
+            <div class="info-box">
+                <p>Te escribo porque este enlace web sirve para <strong>enviarte un mensaje</strong>.</p>
+                <p style="margin-bottom: 0;">Quiero <strong>citarte el día Martes 14 a las 8pm en el Seúl</strong>.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="messageInput">Escribe tu mensaje:</label>
+                <textarea id="messageInput" placeholder="Escribe lo que quieras decir..."></textarea>
+            </div>
+
+            <button onclick="proceedToConfirmation()">Siguiente</button>
+        </div>
+
+        <!-- Sección 3: Confirmación -->
+        <div class="section confirmation-section">
+            <h2>¿Confirmas tu asistencia?</h2>
+            
+            <div class="recap">
+                <h3>Resumen:</h3>
+                <p><strong>Cita:</strong> Martes 14 a las 8pm en el Seúl</p>
+                <p><strong>Tu mensaje:</strong> <span id="messageRecap"></span></p>
+            </div>
+
+            <p>¿Puedes venir?</p>
+            
+            <div class="button-group">
+                <button class="yes" onclick="confirmYes()">SÍ ✓</button>
+                <button class="no" onclick="confirmNo()">NO ✗</button>
+            </div>
+
+            <!-- Personaje animado feliz -->
+            <div class="character">
+                <div class="character-container">
+                    <div class="star">⭐</div>
+                    <div class="happy-face" id="characterFace">😊</div>
+                    <div class="star">⭐</div>
+                </div>
+                <div class="message" id="characterMessage">¡Espero tu respuesta!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Efecto Matrix - Código binario verde en movimiento
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = '01アウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+        const charArray = chars.split('');
+
+        const drops = [];
+
+        // Inicializar columnas
+        for (let i = 0; i < canvas.width / 20; i++) {
+            drops[i] = Math.random() * canvas.height;
+        }
+
+        function drawMatrix() {
+            // Fondo semi-transparente para efecto de rastro
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Color verde Matrix
+            ctx.fillStyle = '#00ff00';
+            ctx.font = '20px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const char = charArray[Math.floor(Math.random() * charArray.length)];
+                ctx.fillText(char, i * 20, drops[i]);
+
+                // Reiniciar la posición si llega al final
+                if (drops[i] > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                drops[i] += Math.random() * 5;
+            }
+
+            requestAnimationFrame(drawMatrix);
+        }
+
+        drawMatrix();
+
+        // Ajustar canvas cuando se redimensiona la ventana
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Funciones de la aplicación
+        function validatePassword() {
+            const passwordInput = document.getElementById('passwordInput').value;
+            const passwordError = document.getElementById('passwordError');
+            const correctPassword = 'Andres';
+
+            if (passwordInput === correctPassword) {
+                passwordError.textContent = '';
+                switchSection('message-section');
+            } else {
+                passwordError.textContent = '❌ Contraseña incorrecta. Intenta de nuevo.';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+
+        function proceedToConfirmation() {
+            const message = document.getElementById('messageInput').value;
+            
+            if (message.trim() === '') {
+                alert('Por favor, escribe un mensaje antes de continuar.');
+                return;
+            }
+
+            document.getElementById('messageRecap').textContent = message;
+            switchSection('confirmation-section');
+        }
+
+        function confirmYes() {
+            const characterFace = document.getElementById('characterFace');
+            const characterMessage = document.getElementById('characterMessage');
+            
+            characterFace.textContent = '😄';
+            characterMessage.textContent = '¡Genial! ¡Te esperamos el martes a las 8pm! 🎉';
+            characterFace.style.animation = 'bounce 0.6s infinite';
+            
+            // Desactivar botones
+            document.querySelectorAll('.button-group button').forEach(btn => {
+                btn.disabled = true;
+                btn.opacity = 0.5;
+            });
+
+            setTimeout(() => {
+                alert('¡Gracias por tu confirmación! ✨');
+            }, 1000);
+        }
+
+        function confirmNo() {
+            const characterFace = document.getElementById('characterFace');
+            const characterMessage = document.getElementById('characterMessage');
+            
+            characterFace.textContent = '😢';
+            characterMessage.textContent = 'Está bien, ¡esperamos verte en otra ocasión! 💙';
+            
+            // Desactivar botones
+            document.querySelectorAll('.button-group button').forEach(btn => {
+                btn.disabled = true;
+                btn.opacity = 0.5;
+            });
+
+            setTimeout(() => {
+                alert('Gracias por tu respuesta. ¡Que disfrutes tu día! 😊');
+            }, 1000);
+        }
+
+        function switchSection(sectionClass) {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            document.querySelector('.' + sectionClass).classList.add('active');
+        }
+
+        // Permitir enviar con Enter en el campo de contraseña
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    validatePassword();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
